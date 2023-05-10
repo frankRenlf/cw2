@@ -1,0 +1,68 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <div class="container">
+        <div style="margin-bottom: 10px" class="clearfix">
+            <a href="/pretty/add" class="btn btn-success">
+                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                add new pretty number
+            </a>
+            <div style="float: right; width: 300px">
+                <form method="get">
+                    <div class="input-group">
+                        <input type="text" name="mobile" class="form-control" placeholder="Search for..."
+                               value="{{ mobile }}">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">
+                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            </button>
+                        </span>
+                    </div><!-- /input-group -->
+                </form>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                Pretty Number List
+            </div>
+            <div class="panel-body">
+                <p>Some default panel content here. Nulla vitae elit libero, a pharetra augue. Aenean lacinia bibendum
+                    nulla sed consectetur. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis
+                    vestibulum. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+            </div>
+
+            <!-- Table -->
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>MOBILE</th>
+                    <th>PRICE</th>
+                    <th>LEVEL</th>
+                    <th>STATUS</th>
+                    <th>OPERATION</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in number_list %}
+                    <tr>
+                        <th>{{ i.id }}</th>
+                        <td>{{ i.mobile }}</td>
+                        <td>{{ i.price }}</td>
+                        <td>{{ i.get_level_display }}</td>
+                        <td>{{ i.get_status_display }}</td>
+                        <td>
+                            <a href="/pretty/{{ i.id }}/edit" class="btn btn-primary btn-xs">edit</a>
+                            <a href="/pretty/{{ i.id }}/delete" class="btn btn-primary btn-xs">delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <ul class="pagination">
+            {{ page_list }}
+        </ul>
+    </div>
+{% endblock %}

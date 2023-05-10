@@ -1,0 +1,80 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <div class="container">
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                Batch upload
+            </div>
+            {#            <div class="panel-body">#}
+            {#                <form action="/user/upload" method="post" enctype="multipart/form-data">#}
+            {#                    {% csrf_token %}#}
+            {#                    <div class="form-group">#}
+            {#                        <input type="file" name="file" value="choose">#}
+            {#                    </div>#}
+            {#                    <input type="submit" class="btn btn-info btn-sm" value="submit">#}
+            {#                </form>#}
+            {#            </div>#}
+        </div>
+        <div style="margin-bottom: 10px">
+            <a href="/flight/?add=1" class="btn btn-success">
+                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                insert new flight
+            </a>
+        </div>
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                Flight List
+            </div>
+            <div class="panel-body">
+                <p>Some default panel content here. Nulla vitae elit libero, a pharetra augue. Aenean lacinia bibendum
+                    nulla sed consectetur. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis
+                    vestibulum. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+            </div>
+
+            <!-- Table -->
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>flight_id</th>
+                    <th>airline_name</th>
+                    <th>departure_time</th>
+                    <th>arrival_time</th>
+                    <th>departure_location</th>
+                    <th>arrival_location</th>
+                    <th>flight_price</th>
+                    <th>seat_number</th>
+                    <th>operation</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in flight_union %}
+                    <tr>
+                        <th>{{ i.id }}</th>
+                        <td>{{ i.flight_id }}</td>
+                        <td>{{ i.airline_name }}</td>
+                        <td>{{ i.departure_time  | date:"Y-m-d H:i" }}</td>
+                        <td>{{ i.arrival_time  | date:"Y-m-d H:i" }}</td>
+                        <td>{{ i.departure_location }}</td>
+                        <td>{{ i.arrival_location }}</td>
+                        <td>{{ i.flight_price }}</td>
+                        <td>{{ i.seat_number }}</td>
+                        <td>
+                            <a href="/flight/?edit=1&fid={{ i.id }}" class="btn btn-primary btn-xs">edit</a>
+                            <a href="/flight/?delete=1&fid={{ i.id }}" class="btn btn-primary btn-xs">delete</a>
+
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <ul class="pagination">
+            {{ page_list }}
+        </ul>
+    </div>
+{% endblock %}

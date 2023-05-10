@@ -1,0 +1,89 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <div class="container">
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                Task List
+            </div>
+            <div class="panel-body">
+                <p>Some default panel content here.</p>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="container">
+        <input id="btn1" type="button" value="btn1">
+        <input id="txt" type="text" value="">
+        <input id="pwd" type="text" value="">
+        <input id="btn2" type="button" value="btn2">
+        <form action="" id="form3">
+            <input id="txt3" name="txt3" type="text" value="">
+            <input id="pwd3" name="pwd3" type="text" value="">
+        </form>
+        <input id="btn3" type="button" value="btn3">
+
+    </div>
+
+{% endblock %}
+{% block js %}
+    <script>
+        $(function () {
+            addbtn1()
+            addbtn2()
+            addbtn3()
+        })
+
+        function addbtn1() {
+            $('#btn1').click(function () {
+                $.ajax({
+                    url: '/task/ajax',
+                    method: 'post',
+                    data: {
+                        n1: 1,
+                        n2: 2,
+                    },
+                    contentType: 'application/json',
+                    dataType: "JSON",
+                    success(res) {
+                        console.log(res.success)
+                    }
+                })
+            })
+        }
+
+        function addbtn2() {
+            $('#btn2').click(function () {
+                $.ajax({
+                    url: '/task/ajax',
+                    method: 'post',
+                    data: {
+                        n1: $('#txt').val(),
+                        n2: $('#pwd').val(),
+                    },
+                    {#contentType: 'application/json',#}
+                    dataType: "JSON",
+                    success(res) {
+                        console.log(res.success)
+                    }
+                })
+            })
+        }
+
+        function addbtn3() {
+            $('#btn3').click(function () {
+                $.ajax({
+                    url: '/task/ajax',
+                    method: 'post',
+                    data: $('#form3').serialize(),
+                    {#contentType: 'application/json',#}
+                    dataType: "JSON",
+                    success(res) {
+                        console.log(res.success)
+                    }
+                })
+            })
+        }
+    </script>
+{% endblock %}

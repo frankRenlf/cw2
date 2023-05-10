@@ -1,0 +1,288 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block content %}
+    <div class="container">
+        <div style="margin-bottom: 10px" class="clearfix">
+            <div>
+                <input id="add" type="button" value="new order" class="btn btn-primary">
+            </div>
+            <div style="float: right; width: 300px">
+                <form method="get">
+                    <div class="input-group">
+                        <input type="text" name="flight_id" class="form-control" placeholder="Search for flight..."
+                               value="{{ search }}">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">
+                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            </button>
+                        </span>
+                    </div><!-- /input-group -->
+                </form>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                Order List
+            </div>
+            <div class="panel-body">
+                <p>Some default panel content here. Nulla vitae elit libero, a pharetra augue. Aenean lacinia bibendum
+                    nulla sed consectetur. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis
+                    vestibulum. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+            </div>
+
+            <!-- Table -->
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>NUMBER</th>
+                    <th>FLIGHT</th>
+                    <th>PASSENGER</th>
+                    <th>PRICE</th>
+                    <th>CREATE_TIME</th>
+                    <th>STATUS</th>
+                    <th>PAYMENT_PLATFORM</th>
+                    <th>OPERATION</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in number_list %}
+                    <tr oid="{{ i.id }}">
+                        <th>{{ i.id }}</th>
+                        <td>{{ i.number }}</td>
+                        <td>{{ i.flight_id }}</td>
+                        <td>{{ i.passenger_id }}</td>
+                        <td>{{ i.price }}</td>
+                        <td>{{ i.create_time | date:"Y-m-d H:i" }}</td>
+                        <td>{{ i.get_status_display }}</td>
+                        <td>{{ i.payment_platform_id }}</td>
+                        <td>
+                            <input oid="{{ i.id }}" type="button" class="btn btn-primary btn-xs btn-edit" value="edit">
+                            <input oid="{{ i.id }}" type="button" class="btn btn-primary btn-xs btn-delete"
+                                   value="delete">
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <ul class="pagination">
+            {{ page_list }}
+        </ul>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel"></h4>
+                </div>
+                <div class="modal-body">
+                    <form action="" id="formAdd">
+                        <div class="clearfix">
+                            {% for field in form %}
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <label>{{ field.label }}</label>
+                                        {{ field }}
+                                        <span style="color: red" class="error-msg"></span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnSave">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="myDelete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="alert alert-danger alert-dismissible fade in" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                        aria-hidden="true">×</span></button>
+                <h4>Confirm delete</h4>
+                <p>If yes, it cannot be recalled</p>
+                <p style="text-align: right">
+                    <button type="button" class="btn btn-danger btnConfirmDelete">Take this action</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Or do recall</button>
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+
+    <script src="{% static 'plugins/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js' %}"></script>
+    <script src="{% static 'plugins/bootstrap-datetimepicker-master/js/locales/bootstrap-datetimepicker.zh-CN.js' %}"></script>
+    <script>
+        $(function () {
+            $('#id_create_time').datetimepicker({
+                format: 'yyyy-mm-dd hh:ii',
+                startDate: '0',
+                language: 'uk',
+                autoclose: true
+            })
+        })
+    </script>
+
+
+    <script>
+        let oid;
+        let is_edit;
+        $(function () {
+            bindNewEvent()
+            bindSaveEvent()
+
+            bindDeleteEvent()
+            bindConfirmDeleteEvent()
+
+            bindEditEvent()
+            {#bindConfirmEditEvent()#}
+        })
+
+        function bindNewEvent() {
+            $("#add").click(function () {
+                $('#formAdd')[0].reset()
+                $('#myModalLabel').text('new order')
+                $('#myModal').modal('show')
+                is_edit = false
+            })
+        }
+
+        function bindSaveEvent() {
+            $("#btnSave").click(function () {
+                $('.error-msg').empty()
+                if (!is_edit) {
+                    $.ajax({
+                        url: '/order/',
+                        type: 'post',
+                        data: $("#formAdd").serialize(),
+                        dataType: 'JSON',
+                        success(res) {
+                            if (res.status) {
+                                alert("add success")
+                                $('#formAdd')[0].reset()
+                                $('#myModal').modal('hide')
+                                location.reload()
+                            } else {
+                                $.each(res.error, function (name, errorList) {
+                                    $('#id_' + name).next().text(errorList[0])
+                                })
+                            }
+                        },
+                        error(res) {
+                            alert(res.error)
+                        }
+                    })
+                } else {
+                    $.ajax({
+                        url: '/order/?oid=' + oid,
+                        type: 'patch',
+                        data: $("#formAdd").serialize(),
+                        dataType: 'JSON',
+                        success(res) {
+                            if (res.status) {
+                                alert("edit success")
+                                $('#formAdd')[0].reset()
+                                $('#myModal').modal('hide')
+                                location.reload()
+                            } else {
+                                $.each(res.error, function (name, errorList) {
+                                    $('#id_' + name).next().text(errorList[0])
+                                })
+                            }
+                        },
+                        error(res) {
+                            alert(res.error)
+                        }
+                    })
+                }
+            })
+        }
+
+        function bindDeleteEvent() {
+            $(".btn-delete").click(function () {
+                $('#myDelete').modal('show')
+                oid = $(this).attr("oid")
+                console.log(oid)
+            })
+        }
+
+        function bindConfirmDeleteEvent() {
+            $(".btnConfirmDelete").click(function () {
+                $.ajax({
+                    url: "/order/?oid=" + oid,
+                    type: "delete",
+                    data: {oid},
+                    dataType: "JSON",
+                    success(res) {
+                        if (res.status) {
+                            $('#myDelete').modal('hide')
+                            location.reload()
+                            oid = 0
+                        } else {
+                            alert(res.error)
+                        }
+                    }
+                })
+            })
+        }
+
+        function bindEditEvent() {
+            $(".btn-edit").click(function () {
+                $('#myModalLabel').text('edit order')
+                oid = $(this).attr("oid")
+                $('#formAdd')[0].reset()
+                $.ajax({
+                    url: "/order/" + oid + "/edit",
+                    type: 'GET',
+                    dataType: 'JSON',
+                    success(res) {
+                        if (res.status) {
+                            $.each(res.data, function (k, v) {
+                                $('#id_' + k).val(v)
+                            })
+                            $("#myModal").modal('show')
+                            is_edit = true
+                        } else {
+                            alert(res.error)
+                            {#$.each(res.error, function (name, errorList) {#}
+                            {#    $('#id_' + name).next().text(errorList[0])})#}
+                        }
+                    },
+                    error(res) {
+                        alert(res.error)
+                    }
+                })
+            })
+        }
+
+        function bindConfirmEditEvent() {
+            $(".btnConfirmEdit").click(function () {
+                $.ajax({
+                    url: "/order/edit",
+                    type: "GET",
+                    data: {oid},
+                    dataType: "JSON",
+                    success(res) {
+                        if (res.status) {
+                            $('#myDelete').modal('hide')
+                            location.reload()
+                            oid = 0
+                        } else {
+                            alert(res.error)
+                        }
+                    }
+                })
+            })
+        }
+    </script>
+{% endblock %}
